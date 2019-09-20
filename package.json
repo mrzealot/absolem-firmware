@@ -1,0 +1,11 @@
+{
+  "name": "absolem-firmware",
+  "version": "0.0.1",
+  "description": "A generic, object oriented keyboard firmware",
+  "author": "Bán Dénes <mr@zealot.hu>",
+  "repository": "github:mrzealot/absolem-firmware",
+  "license": "MIT",
+  "dependencies": {
+    "yargs": "^14.0.0"
+  }
+}
