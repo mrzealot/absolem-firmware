@@ -23,9 +23,6 @@ namespace absolem {
         virtual bool onAfterEnqueue(List<Event>& e);
         virtual Byte onAfterEnqueuePriority();
 
-        virtual bool onBeforeTick();
-        virtual Byte onBeforeTickPriority();
-
         virtual bool onDirectSearch(Key k, List<Rule>& candidates);
         virtual Byte onDirectSearchPriority();
 

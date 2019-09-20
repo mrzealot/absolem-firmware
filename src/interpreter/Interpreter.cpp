@@ -24,9 +24,9 @@
 
 namespace absolem {
 
-    void Interpreter::enqueue(List<Event> events) {
+    void Interpreter::tick(List<Event> events) {
 
-        PF(6);
+        currentTime = controller->time();
 
         #ifndef DISABLE_HOOK_ON_BEFORE_ENQUEUE
         notify("onBeforeEnqueue", [&](Module* m) {
@@ -41,22 +41,6 @@ namespace absolem {
             return m->onAfterEnqueue(events);
         });
         #endif
-    }
-
-    void Interpreter::tick() {
-
-        PF(10);
-
-        controller->tick();
-        currentTime = controller->time();
-
-        #ifndef DISABLE_HOOK_ON_BEFORE_TICK
-        notify("onBeforeTick", [&](Module* m) {
-            return m->onBeforeTick();
-        });
-        #endif
-
-        PF(11);
 
         Time currentTimeBatch = 0;
         while (queue.size()) {
@@ -88,8 +72,6 @@ namespace absolem {
             DD(controller->debug("Interpreter::tick: Direct search ended, %s", foundRules ? "rules found!" : "no rules found...");)
             #endif
 
-            PF(12);
-
             // 2. a virtual hook for the mapped key
             virtualKey = physicalKey;
             if (!foundRules) {
@@ -108,8 +90,6 @@ namespace absolem {
                 #endif
             }
 
-            PF(13);
-
             // 3. using the built-in mapping
             if (!foundRules) {
                 auto ruleIt = rules.find(virtualKey);
@@ -120,8 +100,6 @@ namespace absolem {
                 }
                 candidates = ruleIt->second;
             }
-
-            PF(14);
 
             Action* match = nullptr;
             bool undecided = false;
@@ -144,8 +122,6 @@ namespace absolem {
                 break;
             }
 
-            PF(15);
-
             if (match) {
                 DD(controller->debug("Interpreter::tick: There's a match...");)
                 (*match)(*this);
@@ -156,19 +132,11 @@ namespace absolem {
 
         }
 
-        PF(16);
-
         #ifndef DISABLE_HOOK_ON_AFTER_TICK
         notify("onAfterTick", [&](Module* m) {
             return m->onAfterTick();
         });
         #endif
-
-        // emergency fix for potentially stuck elements
-        // 3000 is just a magic number here, TODO
-        //if (currentTime - lastUpdate > 3000) {
-        //    complete(1);
-        //}
     }
 
     void Interpreter::addRule(VirtualKey key, List<Rule> rule) {
@@ -181,26 +149,28 @@ namespace absolem {
 
         MODULE_HOOK(onBeforeEnqueue);
         MODULE_HOOK(onAfterEnqueue);
-
-        MODULE_HOOK(onBeforeTick);
         MODULE_HOOK(onDirectSearch);
         MODULE_HOOK(onMapKey);
         MODULE_HOOK(onVirtualSearch);
         MODULE_HOOK(onAfterTick);
     }
 
-    Controller* Interpreter::getController() {
-        return controller;
-    }
-
-    List<Event>& Interpreter::getQueue() {
-        return queue;
-    }
-
     void Interpreter::complete(Size num) {
         queue.erase(queue.begin(), queue.begin() + num);
         DD(controller->debug("Interpreter::complete: %d elem is completed, new queue size is %d...", num, queue.size());)
         lastUpdate = currentTime;
+    }
+
+    Controller* Interpreter::getController() {
+        return controller;
+    }
+
+    Decoder* Interpreter::getDecoder() {
+        return decoder;
+    }
+
+    List<Event>& Interpreter::getQueue() {
+        return queue;
     }
 
     Module* Interpreter::getModule(String name) {

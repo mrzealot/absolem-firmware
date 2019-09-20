@@ -6,6 +6,7 @@
 #include "../common/keys.h"
 #include "../common/types.h"
 #include "../controllers/Controller.h"
+#include "../decoder/Decoder.h"
 #include "../decoder/Event.h"
 #include "Rule.h"
 #include "modules/Module.h"
@@ -16,27 +17,28 @@ namespace absolem {
 
     class Interpreter {
         public:
-        Interpreter(Controller* c) : controller(c) {}
+        Interpreter(Controller* c, Decoder* d) : controller(c), decoder(d) {}
 
-        void enqueue(List<Event> events);
-        void tick();
+        void tick(List<Event> events);
 
         void addRule(VirtualKey key, List<Rule> rule);
         void addModule(Module* module);
-
-        Controller* getController();
-        List<Event>& getQueue();
         void complete(Size num);
 
+        Controller* getController();
+        Decoder* getDecoder();
+        List<Event>& getQueue();
         Module* getModule(String name);
-
         Key getPhysicalKey();
         VirtualKey getVirtualKey();
         Time getCurrentTime();
         Time getLastUpdate();
 
         private:
+        void notify(String event, Callback callback);
+
         Controller* controller;
+        Decoder* decoder;
         List<Event> queue;
         Time currentTime;
         Time lastUpdate;
@@ -45,8 +47,6 @@ namespace absolem {
         Map<VirtualKey, List<Rule>> rules;
         Map<String, Module*> modules;
         Map<String, List<Pair<Byte, Module*>>> priorities;
-
-        void notify(String event, Callback callback);
     };
 
 } // namespace absolem

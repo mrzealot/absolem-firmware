@@ -12,9 +12,6 @@ namespace absolem {
     bool Module::onAfterEnqueue(List<Event>& e) { return true; }
     Byte Module::onAfterEnqueuePriority() { return 0; }
 
-    bool Module::onBeforeTick() { return true; }
-    Byte Module::onBeforeTickPriority() { return 0; }
-
     bool Module::onDirectSearch(Key k, List<Rule>& candidates) { return true; }
     Byte Module::onDirectSearchPriority() { return 0; }
 
