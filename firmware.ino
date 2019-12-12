@@ -1,63 +1,7 @@
-#ifndef ABSOLEM_FIRMWARE_INO
-#define ABSOLEM_FIRMWARE_INO
-
-#define PROFILING_MAIN
-#include <nrf.h>
-#include "nrf_timer.h"
-
-#include "src/controllers/Nrf52Bluefruit.h"
-#include "src/decoder/wiring/MatrixWiring.h"
-#include "src/decoder/debounce/DebouncePerKey.h"
-#include "src/decoder/Decoder.h"
-
-#include "src/interpreter/Interpreter.h"
-#include "src/interpreter/triggers/PressTrigger.h"
-#include "src/interpreter/triggers/MultiTrigger.h"
-#include "src/interpreter/actions/KeyCodeAction.h"
-#include "src/interpreter/actions/ResetAction.h"
-#include "src/interpreter/actions/LayerAction.h"
-#include "src/interpreter/actions/SequenceAction.h"
-#include "src/interpreter/actions/FlushAction.h"
-#include "src/interpreter/actions/ConsumerAction.h"
-#include "src/interpreter/actions/BatteryAction.h"
-
-#include "src/interpreter/modules/ReporterModule.h"
-#include "src/interpreter/modules/CacheModule.h"
-#include "src/interpreter/modules/LayerModule.h"
-
-#include "src/hidspec/keycodes_hungarian.h"
-
-
-#include "src/profiling/profiling.h"
-
-using namespace absolem;
-
-
-Nrf52Bluefruit controller;
-MatrixWiring wiring(&controller, {2, 3, 4, 5, 16, 15, 7, 11}, {29, 8, 14, 13, 12});
-DebouncePerKey debounce(&controller, 5);
-Decoder decoder(&wiring, &debounce);
-
-void keyboardSetup() {
-  controller.manufacturer = "MrZealot";
-  controller.model = "Absolem";
-}
-
-
-Interpreter interpreter(&controller);
-
-ReporterModule reporter;
-CacheModule cache;
-LayerModule layer(100);
 
 
 
-// -------
-// this is NOT elegant yet, I'm just trying to replicate the
-// functionality of my proto build with this mental model
 
-
-#define TERM 200000
 
 
 Trigger* pressTrigger = new PressTrigger(true);
